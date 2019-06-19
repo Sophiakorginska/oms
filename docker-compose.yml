@@ -1,0 +1,25 @@
+version: '3'
+services:
+  teamcity-server-instance:
+    image: jetbrains/teamcity-server
+    ports:
+     - "8111:8111"
+    restart: always
+    volumes:
+      - ~/data:/data/teamcity_server/datadir
+      - ~/logs:/opt/teamcity/logs
+    networks:
+      - teamcity-network
+ 
+  teamcity-agent-instance:
+    image: jetbrains/teamcity-agent
+    restart: always
+    volumes:
+      - ~/agent-conf:/data/teamcity_agent/conf
+    environment:
+      - SERVER_URL=teamcity-server-instance:8111
+    networks:
+      - teamcity-network
+ 
+networks:
+  teamcity-network:
