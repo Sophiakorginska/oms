@@ -1,0 +1,48 @@
+---
+
+- name: run the playbook tasks on the localhost
+  hosts: 127.0.0.1
+  connection: local
+  become: yes
+  tasks:
+    - name: install pip
+      yum:
+        state: latest
+        name: python-pip
+
+    - pip:
+        name:
+          - docker-compose
+
+    - docker_compose:
+        project_name: teamcity
+        definition:
+            version: '3'
+            services:
+              teamcity-server-instance:
+                image: jetbrains/teamcity-server
+                ports:
+                  - "8111:8111"
+                restart: always
+                volumes:
+                  - ~/data:/data/teamcity_server/datadir
+                  - ~/logs:/opt/teamcity/logs
+                networks:
+                  - teamcity-network
+
+              teamcity-agent-instance:
+                image: jetbrains/teamcity-agent
+                restart: always
+                volumes:
+                  - ~/agent-conf:/data/teamcity_agent/conf
+                environment:
+                  - SERVER_URL=teamcity-server-instance:8111
+                networks:
+                  - teamcity-network
+
+            networks:
+              teamcity-network:
+      register: output
+    
+    - debug:
+        var: output
