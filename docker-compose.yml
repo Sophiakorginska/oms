@@ -6,8 +6,8 @@ services:
      - "8111:8111"
     restart: always
     volumes:
-      - ~/data:/data/teamcity_server/datadir
-      - ~/logs:/opt/teamcity/logs
+      - /mnt/disks/teamcity_data/datadir:/data/teamcity_server/datadir
+      - /mnt/disks/teamcity_data/logs:/opt/teamcity/logs
     networks:
       - teamcity-network
  
